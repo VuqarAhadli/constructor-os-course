@@ -19,7 +19,21 @@ void getcCopy(void)
 
 	while ((ch = getc(stdin)) != EOF)
 	{
-		putc(ch, stdout);
+		if(putc(ch, stdout) == EOF)
+		{
+			perror("unexpected EOF");
+			return;
+		}
+	}
+
+	if (ferror(stdin)) 
+	{
+		perror("could not open stdin"); 
+	}
+
+	if(fflush(stdout) == EOF)
+	{ 
+		perror("improper ending of a sequence");
 	}
 
 }
@@ -28,10 +42,29 @@ void getcCopy(void)
 void readCopy(void)
 {
 	char ch;
+	ssize_t size;
 
-	while(read(STDIN_FILENO, &ch, 1) > 0)
+	while((size = read(STDIN_FILENO, &ch, 1)) > 0)
 	{
-		write(STDOUT_FILENO, &ch, 1);
+		ssize_t sent = 0;
+		
+		while(sent < size)
+		{
+			ssize_t current = write(STDOUT_FILENO, &ch + sent, size - sent);
+			
+			if(current == -1)
+			{
+				perror("unable to write\n");
+				return;
+			}
+
+			sent += current;
+		}
+	}
+
+	if(size == -1)
+	{
+		perror("couldnt read the file\n");
 	}
 }
 
