@@ -74,8 +74,14 @@ void *isPdiRange(void *arg)
 	}
 	for (int i = data->low ; ; ++i)
 	{
-		isPdi(i);
-		if (isPdi(i)) printf("Number %i is pdi\n", i);
+		bool pdi = isPdi(i);
+		if (pdi) printf("Number %i is pdi\n", i);
+		if(pdi && i % 10 == 0 && i + 1 <= data->high)
+		{
+			printf("Number %i is pdi\n", i+1);
+			i++;
+		}
+
 		if (i == data->high)
 		{
 			if (data->verbose)
@@ -85,6 +91,7 @@ void *isPdiRange(void *arg)
 			break;
 		}
 	}
+	return NULL;
 }
 
 int main (int argc, char *argv[])
